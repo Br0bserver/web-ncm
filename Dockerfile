@@ -45,4 +45,4 @@ ENV ACCESS_TOKEN=secret
 
 EXPOSE 3000
 
-CMD ["node", "server/app.js"]
+CMD ["sh", "-c", "touch /tmp/anonymous_token && node server/app.js"]

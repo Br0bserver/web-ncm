@@ -1,5 +1,18 @@
 var express = require('express')
 var path = require('path')
+var fs = require('fs')
+
+// 环境预检：修复 ncm-api-enhanced 强制读取 /tmp/anonymous_token 导致崩溃的问题
+var tokenPath = '/tmp/anonymous_token'
+try {
+  if (!fs.existsSync(tokenPath)) {
+    console.log('[Init] Creating missing anonymous token file at:', tokenPath)
+    fs.writeFileSync(tokenPath, '', 'utf8')
+  }
+} catch (e) {
+  console.error('[Init] Failed to create /tmp/anonymous_token, the service may crash:', e.message)
+}
+
 var config = require('./config')
 var cookieParser = require('cookie-parser')
 
