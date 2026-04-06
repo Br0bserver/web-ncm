@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+AGENTS.md
+server/sessions.json
+vendor/api-enhanced/.git
