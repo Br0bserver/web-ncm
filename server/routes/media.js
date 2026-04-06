@@ -78,4 +78,25 @@ router.get('/audio', sessionMiddleware, function(req, res) {
     })
 })
 
+router.get('/video', function(req, res) {
+  var fs = require('fs')
+  var path = require('path')
+  var videoDir = path.join(__dirname, '..', 'video')
+  if (!fs.existsSync(videoDir)) {
+    return res.status(404).send('Video directory not found')
+  }
+  var files = fs.readdirSync(videoDir)
+  var mp4File = null
+  for (var i = 0; i < files.length; i++) {
+    if (files[i].endsWith('.mp4')) {
+      mp4File = files[i]
+      break
+    }
+  }
+  if (!mp4File) {
+    return res.status(404).send('No mp4 video found')
+  }
+  res.sendFile(path.join(videoDir, mp4File))
+})
+
 module.exports = router

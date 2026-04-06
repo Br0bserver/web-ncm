@@ -6,3 +6,4 @@ dist/
 AGENTS.md
 server/sessions.json
 vendor/api-enhanced/.git
+server/video/*.mp4

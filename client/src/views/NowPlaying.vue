@@ -1,5 +1,8 @@
 <template>
   <div class="now-playing-page" v-if="currentSong">
+    <div class="boss-key-overlay" v-if="showBossKey" v-on:click="showBossKey = false">
+      <video :src="bossVideoUrl" autoplay loop muted class="boss-key-video"></video>
+    </div>
     <div class="np-inner">
       <div class="np-left">
         <div class="np-cover-wrap">
@@ -64,8 +67,13 @@
       <div class="np-right">
         <div class="np-lyric-header">
           <span class="np-lyric-title">歌词</span>
-          <div class="np-lyric-modes" v-if="hasTranslation || hasRomalrc">
-            <button class="np-lyric-mode-btn" v-on:click="cycleLyricMode">{{ lyricModeLabel }}</button>
+          <div class="np-lyric-modes">
+            <button class="np-lyric-mode-btn boss-btn-inline" v-on:click="showBossKey = true" title="沉浸模式">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c3.85 0 7.112 2.359 8.542 5.612"/><path d="M21.542 12C20.268 16.057 16.477 19 12 19c-3.85 0-7.112-2.359-8.542-5.612"/></svg>
+            </button>
+            <template v-if="hasTranslation || hasRomalrc">
+              <button class="np-lyric-mode-btn" v-on:click="cycleLyricMode">{{ lyricModeLabel }}</button>
+            </template>
           </div>
         </div>
         <div class="np-lyric-wrap" ref="lyricWrap">
@@ -117,6 +125,10 @@ export default {
     }
   },
   computed: {
+    bossVideoUrl: function() {
+      var t = require('../api/http').default.getToken()
+      return '/media/video' + (t ? '?token=' + t : '')
+    },
     coverUrl: function() {
       if (!this.currentSong) return ''
       var al = this.currentSong.al || this.currentSong.album
@@ -515,6 +527,63 @@ export default {
 </script>
 
 <style scoped>
+.np-lyric-modes {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row !important;
+  flex-direction: row !important;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+.np-lyric-mode-btn {
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  cursor: pointer;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  line-height: 1;
+  height: 26px;
+  min-width: 32px;
+}
+
+.boss-btn-inline {
+  margin-right: 8px;
+}
+
+.boss-key-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  z-index: 9999;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.boss-key-video {
+  max-width: 100vw;
+  max-height: 100vh;
+  -o-object-fit: contain;
+  object-fit: contain;
+}
+
 .now-playing-page {
   height: 100%;
   display: -webkit-flex;
