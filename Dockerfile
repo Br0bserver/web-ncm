@@ -1,5 +1,5 @@
 # Stage 1: Build frontend and prepare dependencies
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -12,16 +12,17 @@ RUN npm run build
 # 2. Install vendor API production dependencies
 WORKDIR /app/vendor/api-enhanced
 COPY vendor/api-enhanced/package*.json ./
-RUN npm install --production
+# Use --omit=dev and --ignore-scripts to avoid husky/lint errors in container
+RUN npm install --omit=dev --ignore-scripts
 
 # Stage 2: Lightweight Production Image
-FROM node:18-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
 # 1. Install root production dependencies
 COPY package*.json ./
-RUN npm install --production && \
+RUN npm install --omit=dev --ignore-scripts && \
     npm cache clean --force
 
 # 2. Copy backend source code
