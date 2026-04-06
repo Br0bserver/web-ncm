@@ -9,10 +9,9 @@ RUN npm install
 COPY client/ ./client/
 RUN npm run build
 
-# 2. Install vendor API production dependencies
+# 2. Prepare vendor API
+COPY vendor/ ./vendor/
 WORKDIR /app/vendor/api-enhanced
-COPY vendor/api-enhanced/package*.json ./
-# Use --omit=dev and --ignore-scripts to avoid husky/lint errors in container
 RUN npm install --omit=dev --ignore-scripts
 
 # Stage 2: Lightweight Production Image
@@ -31,16 +30,17 @@ COPY server/ ./server/
 # 3. Copy built frontend assets
 COPY --from=builder /app/client/dist ./client/dist
 
-# 4. Copy vendor API with its production node_modules
+# 4. Copy vendor API
 COPY --from=builder /app/vendor/api-enhanced/module ./vendor/api-enhanced/module
 COPY --from=builder /app/vendor/api-enhanced/util ./vendor/api-enhanced/util
 COPY --from=builder /app/vendor/api-enhanced/data ./vendor/api-enhanced/data
 COPY --from=builder /app/vendor/api-enhanced/node_modules ./vendor/api-enhanced/node_modules
+COPY --from=builder /app/vendor/api-enhanced/app.js ./vendor/api-enhanced/app.js
+COPY --from=builder /app/vendor/api-enhanced/package.json ./vendor/api-enhanced/package.json
 
 # 5. Environment configuration
 ENV NODE_ENV=production
 ENV PORT=3000
-# Default token for URL access, can be overridden via docker run -e ACCESS_TOKEN=xxx
 ENV ACCESS_TOKEN=secret
 
 EXPOSE 3000
