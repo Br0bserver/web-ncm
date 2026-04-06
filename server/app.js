@@ -59,8 +59,8 @@ app.use(function(err, req, res, next) {
   res.status(500).json({ code: 500, message: 'Internal server error' })
 })
 
-app.listen(config.PORT, function() {
-  console.log('web-ncm server running on port ' + config.PORT)
+app.listen(config.PORT, '0.0.0.0', function() {
+  console.log('web-ncm server running on 0.0.0.0:' + config.PORT)
 })
 
 module.exports = app
